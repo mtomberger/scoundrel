@@ -1,0 +1,9 @@
+# Build-Ausgabe (neu erzeugen mit: node build.mjs)
+dist/
+
+# Betriebssystem / Editor
+.DS_Store
+Thumbs.db
+desktop.ini
+.vscode/
+.idea/
