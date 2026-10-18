@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="de">
+<html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
@@ -15,27 +15,29 @@
 </head>
 <body>
 <!-- BUILD:BODY -->
+<!-- Alle Texte kommen aus js/i18n.js (data-i18n*-Attribute). -->
 <div id="app">
   <header class="bar">
     <div class="brand" aria-label="Scoundrel">SCOUNDREL</div>
     <div class="bar-tools">
-      <button class="ibtn" id="btn-sfx" type="button" aria-label="Soundeffekte" aria-pressed="true" title="Soundeffekte (M)"><img alt="" data-icon="speaker"></button>
-      <button class="ibtn" id="btn-music" type="button" aria-label="Musik" aria-pressed="false" title="Musik"><img alt="" data-icon="note"></button>
-      <button class="ibtn ibtn-text" id="btn-help" type="button" aria-label="Spielregeln" title="Spielregeln">?</button>
-      <button class="ibtn" id="btn-pause" type="button" aria-label="Menü" title="Menü (Esc)"><img alt="" data-icon="menu"></button>
+      <button class="ibtn ibtn-text ibtn-lang" id="btn-lang" type="button" data-i18n-aria="aria.langSwitch" data-i18n-title="aria.langSwitch"></button>
+      <button class="ibtn" id="btn-sfx" type="button" aria-pressed="true" data-i18n-aria="aria.sfx" data-i18n-title="title.sfx"><img alt="" data-icon="speaker"></button>
+      <button class="ibtn" id="btn-music" type="button" aria-pressed="false" data-i18n-aria="aria.music" data-i18n-title="title.music"><img alt="" data-icon="note"></button>
+      <button class="ibtn ibtn-text" id="btn-help" type="button" data-i18n-aria="aria.rules" data-i18n-title="aria.rules">?</button>
+      <button class="ibtn" id="btn-pause" type="button" data-i18n-aria="aria.menu" data-i18n-title="title.menu"><img alt="" data-icon="menu"></button>
     </div>
   </header>
 
-  <main class="table" id="table" aria-label="Spieltisch">
+  <main class="table" id="table" data-i18n-aria="aria.table">
     <div class="cell cell-status">
-      <span class="room-no" id="room-no">Raum 1</span>
-      <span class="pips" id="pips" aria-label="Karten in diesem Raum genommen"><i></i><i></i><i></i></span>
-      <span class="potion-flag" id="potion-flag">Trank bereit</span>
+      <span class="room-no" id="room-no"></span>
+      <span class="pips" id="pips" data-i18n-aria="aria.pips"><i></i><i></i><i></i></span>
+      <span class="potion-flag" id="potion-flag"></span>
     </div>
 
     <div class="cell cell-deck">
       <div class="pile" id="pile-dungeon"><img class="pile-img" id="deck-img" alt=""></div>
-      <div class="pile-label">Dungeon <b id="dungeon-count">44</b></div>
+      <div class="pile-label"><span data-i18n="pile.dungeon"></span> <b id="dungeon-count">44</b></div>
     </div>
 
     <div class="cell cell-room">
@@ -44,7 +46,7 @@
 
     <div class="cell cell-discard">
       <div class="pile" id="pile-discard"><img class="pile-img" id="discard-img" alt=""></div>
-      <div class="pile-label">Ablage <b id="discard-count">0</b></div>
+      <div class="pile-label"><span data-i18n="pile.discard"></span> <b id="discard-count">0</b></div>
     </div>
 
     <div class="cell cell-hp">
@@ -52,38 +54,38 @@
         <img class="hp-heart" id="hp-heart" alt="">
         <div class="hp-main">
           <div class="hp-num"><span id="hp-val">20</span><span class="hp-max">/20</span></div>
-          <div class="hp-word">Leben</div>
+          <div class="hp-word" data-i18n="hp.word"></div>
         </div>
       </div>
-      <div class="hp-bar" id="hp-bar" role="meter" aria-label="Leben" aria-valuemin="0" aria-valuemax="20" aria-valuenow="20"></div>
+      <div class="hp-bar" id="hp-bar" role="meter" data-i18n-aria="aria.hp" aria-valuemin="0" aria-valuemax="20" aria-valuenow="20"></div>
     </div>
 
     <div class="cell cell-weapon">
       <div class="weapon-stack" id="weapon-stack"></div>
       <div class="weapon-label">
-        <span class="weapon-name" id="weapon-name">Keine Waffe</span>
-        <span class="weapon-limit" id="weapon-limit">Monster kämpfst du mit bloßen Fäusten.</span>
+        <span class="weapon-name" id="weapon-name"></span>
+        <span class="weapon-limit" id="weapon-limit"></span>
       </div>
     </div>
 
     <div class="cell cell-actions">
-      <button class="btn btn-flee" id="btn-flee" type="button"><img alt="" data-icon="door"><span>Fliehen</span></button>
+      <button class="btn btn-flee" id="btn-flee" type="button"><img alt="" data-icon="door"><span data-i18n="flee"></span></button>
       <div class="flee-hint" id="flee-hint"></div>
     </div>
   </main>
 
-  <section class="log" id="log" aria-live="polite" aria-label="Spielverlauf"></section>
+  <section class="log" id="log" aria-live="polite" data-i18n-aria="aria.log"></section>
 </div>
 
 <!-- Kampfauswahl -->
-<div class="choice" id="choice" role="dialog" aria-label="Kampf" hidden>
+<div class="choice" id="choice" role="dialog" data-i18n-aria="aria.choice" hidden>
   <div class="choice-title" id="choice-title"></div>
   <div class="choice-btns">
     <button class="btn btn-steel" id="ch-weapon" type="button"></button>
     <button class="btn btn-blood" id="ch-fist" type="button"></button>
   </div>
   <div class="choice-note" id="choice-note"></div>
-  <button class="choice-cancel" id="ch-cancel" type="button">Abbrechen <small>[Esc]</small></button>
+  <button class="choice-cancel" id="ch-cancel" type="button"><span data-i18n="cancel"></span> <small>[Esc]</small></button>
 </div>
 
 <!-- Titelbildschirm -->
@@ -92,16 +94,20 @@
     <div class="torch torch-l" aria-hidden="true"></div>
     <div class="torch torch-r" aria-hidden="true"></div>
     <h1 class="logo">SCOUNDREL</h1>
-    <p class="tagline">Ein Dungeon aus 44 Spielkarten. Du hast 20 Leben.</p>
+    <p class="tagline" data-i18n="tagline"></p>
     <div class="fan" id="title-fan" aria-hidden="true"></div>
     <div class="menu">
-      <button class="btn btn-gold" id="t-continue" type="button" hidden>Weiterspielen</button>
-      <button class="btn btn-gold" id="t-new" type="button">Neues Spiel</button>
-      <button class="btn" id="t-daily" type="button">Tagesdungeon</button>
-      <button class="btn" id="t-rules" type="button">Spielregeln</button>
+      <button class="btn btn-gold" id="t-continue" type="button" data-i18n="t.continue" hidden></button>
+      <button class="btn btn-gold" id="t-new" type="button" data-i18n="t.new"></button>
+      <button class="btn" id="t-daily" type="button" data-i18n="t.daily"></button>
+      <button class="btn" id="t-rules" type="button" data-i18n="t.rules"></button>
     </div>
     <p class="records" id="t-records"></p>
-    <p class="credit">Nach dem Solitär-Kartenspiel <i>Scoundrel</i> von Zach Gage &amp; Kurt Bieg (2011).</p>
+    <div class="lang-switch" role="group" data-i18n-aria="aria.lang">
+      <button class="lang-opt" type="button" data-lang="de" lang="de">Deutsch</button>
+      <button class="lang-opt" type="button" data-lang="en" lang="en">English</button>
+    </div>
+    <p class="credit" data-i18n-html="credit"></p>
   </div>
 </div>
 
@@ -109,55 +115,23 @@
 <div class="overlay" id="ov-rules" hidden>
   <div class="panel panel-rules" role="dialog" aria-labelledby="rules-h">
     <div class="panel-head">
-      <h2 id="rules-h">Spielregeln</h2>
-      <button class="btn btn-small" type="button" data-close>Schließen</button>
+      <h2 id="rules-h" data-i18n="rules.h"></h2>
+      <button class="btn btn-small" type="button" data-close data-i18n="close"></button>
     </div>
-    <div class="rules" id="rules-body">
-      <p class="lead">Du betrittst einen Dungeon aus 44 Karten. Kämpfe dich mit 20 Lebenspunkten durch, bis keine Karte mehr übrig ist.</p>
-
-      <h3>Die Karten</h3>
-      <ul class="kinds">
-        <li><img alt="" data-card="C6"><div><b>Monster</b> – alle 26 Kreuz- und Pikkarten. Ihr Schaden entspricht dem Wert: 2–10, Bube 11, Dame 12, König 13, Ass 14.</div></li>
-        <li><img alt="" data-card="D5"><div><b>Waffen</b> – die 9 Karokarten (2–10). Eine Waffe zieht so viel vom Monsterschaden ab, wie sie wert ist.</div></li>
-        <li><img alt="" data-card="H7"><div><b>Heiltränke</b> – die 9 Herzkarten (2–10). Sie heilen ihren Wert, aber nie über 20.</div></li>
-      </ul>
-      <p class="small">Rote Bildkarten, rote Asse und Joker sind aussortiert.</p>
-
-      <h3>Ein Raum</h3>
-      <p>Es liegen immer 4 Karten offen: das ist der Raum. Du kannst <b>fliehen</b> – dann wandern alle 4 Karten unter den Dungeon. Zweimal hintereinander fliehen geht nicht.</p>
-      <p>Bleibst du, nimmst du <b>3 der 4 Karten</b> nacheinander. Die vierte bleibt liegen und gehört zum nächsten Raum.</p>
-
-      <h3>Waffen</h3>
-      <p>Eine genommene Waffe musst du anlegen. Deine alte Waffe und alle Monster darauf kommen auf die Ablage.</p>
-
-      <h3>Heiltränke</h3>
-      <p>Pro Raum wirkt nur ein Trank. Nimmst du einen zweiten, verfällt er ohne Wirkung.</p>
-
-      <h3>Kampf</h3>
-      <p><b>Mit bloßen Fäusten</b> verlierst du den vollen Monsterwert an Leben.</p>
-      <p><b>Mit der Waffe</b> verlierst du nur Monster minus Waffe (mindestens 0). Das Monster kommt auf die Waffe. Danach kann die Waffe nur noch Monster schlagen, die <b>kleiner oder gleich</b> dem zuletzt damit erschlagenen sind.</p>
-      <p class="example">Beispiel: Deine 5er-Waffe hat eine Dame (12) erschlagen. Gegen eine 6 darfst du sie benutzen. Hat sie danach die 6 erschlagen, musst du einen Buben (11) mit Fäusten bekämpfen – die Waffe bleibt aber für Monster bis 6 erhalten.</p>
-
-      <h3>Wertung</h3>
-      <p><b>Durchgekommen:</b> Deine Punkte sind deine restlichen Leben. Hast du 20 Leben und war deine letzte Karte ein Heiltrank, zählt dessen Wert dazu (maximal 30).</p>
-      <p><b>Gestorben:</b> Die Werte aller verbliebenen Monster (Dungeon und offene Raumkarten) werden abgezogen – das Ergebnis ist negativ.</p>
-
-      <h3>Steuerung</h3>
-      <p>Karte anklicken oder antippen. Tastatur: <kbd>1</kbd>–<kbd>4</kbd> Karte wählen, <kbd>F</kbd> fliehen, im Kampf <kbd>W</kbd> Waffe oder <kbd>F</kbd> Faust, <kbd>M</kbd> Ton, <kbd>Esc</kbd> Menü.</p>
-    </div>
+    <div class="rules" id="rules-body" data-i18n-html="rules.body"></div>
   </div>
 </div>
 
 <!-- Pause -->
 <div class="overlay" id="ov-pause" hidden>
   <div class="panel panel-small" role="dialog" aria-labelledby="pause-h">
-    <h2 id="pause-h">Pause</h2>
+    <h2 id="pause-h" data-i18n="pause.h"></h2>
     <p class="mode-line" id="pause-mode"></p>
     <div class="menu">
-      <button class="btn btn-gold" type="button" data-close>Weiter</button>
-      <button class="btn" type="button" id="p-rules">Spielregeln</button>
-      <button class="btn" type="button" id="p-restart">Dungeon neu starten</button>
-      <button class="btn" type="button" id="p-menu">Hauptmenü</button>
+      <button class="btn btn-gold" type="button" data-close data-i18n="p.resume"></button>
+      <button class="btn" type="button" id="p-rules" data-i18n="t.rules"></button>
+      <button class="btn" type="button" id="p-restart" data-i18n="p.restart"></button>
+      <button class="btn" type="button" id="p-menu" data-i18n="p.menu"></button>
     </div>
   </div>
 </div>
@@ -168,16 +142,16 @@
     <h2 class="end-title" id="end-h"></h2>
     <p class="mode-line" id="end-mode"></p>
     <div class="score-box">
-      <div class="score-label">Punkte</div>
+      <div class="score-label" data-i18n="end.scoreLabel"></div>
       <div class="score" id="end-score">0</div>
       <div class="score-calc" id="end-calc"></div>
-      <div class="badge" id="end-best" hidden>Neuer Bestwert!</div>
+      <div class="badge" id="end-best" data-i18n="end.best" hidden></div>
     </div>
     <dl class="stats" id="end-stats"></dl>
     <div class="menu menu-row">
-      <button class="btn btn-gold" type="button" id="e-again">Nochmal</button>
-      <button class="btn" type="button" id="e-same">Gleicher Dungeon</button>
-      <button class="btn" type="button" id="e-menu">Hauptmenü</button>
+      <button class="btn btn-gold" type="button" id="e-again"></button>
+      <button class="btn" type="button" id="e-same" data-i18n="e.same"></button>
+      <button class="btn" type="button" id="e-menu" data-i18n="e.menu"></button>
     </div>
   </div>
 </div>
@@ -186,6 +160,7 @@
 <!-- /BUILD:BODY -->
 
 <!-- BUILD:SCRIPTS -->
+<script src="js/i18n.js"></script>
 <script src="js/sprites.js"></script>
 <script src="js/audio.js"></script>
 <script src="js/game.js"></script>

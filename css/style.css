@@ -118,6 +118,7 @@ img { image-rendering: pixelated; }
 .ibtn:hover { background: var(--stone); }
 .ibtn:active { transform: translateY(2px); }
 .ibtn:focus-visible { outline: 3px solid var(--gold-hi); outline-offset: 5px; }
+.ibtn-lang { font-size: 10px; letter-spacing: 0.04em; }
 .ibtn[aria-pressed="false"] img { opacity: 0.35; }
 .ibtn[aria-pressed="false"]::after {
   content: "";
@@ -501,6 +502,20 @@ img { image-rendering: pixelated; }
 }
 .title-wrap .menu { width: min(300px, 100%); }
 .records { margin: 0; color: var(--text); font-size: 20px; text-wrap: balance; }
+.lang-switch { display: flex; gap: 6px; }
+.lang-opt {
+  padding: 4px 10px;
+  border: 0;
+  background: none;
+  color: var(--muted);
+  font: 20px var(--f-body);
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+.lang-opt:hover { color: var(--text); }
+.lang-opt[aria-pressed="true"] { color: var(--gold); text-decoration: none; box-shadow: inset 0 -3px 0 var(--gold); }
+.lang-opt:focus-visible { outline: 3px solid var(--gold-hi); outline-offset: 2px; }
 .credit { margin: 0; color: var(--muted); font-size: 18px; text-wrap: balance; }
 .torch {
   position: absolute;
@@ -663,8 +678,10 @@ kbd {
   .fan { gap: 8px; }
   .fan img { width: 68px; height: 92px; }
   .stats { grid-template-columns: 1fr; }
-  .bar-tools { gap: 10px; }
-  .ibtn { width: 36px; height: 36px; }
+  .brand { font-size: 10px; }
+  .bar-tools { gap: 6px; }
+  .ibtn { width: 32px; height: 32px; }
+  .ibtn-lang { font-size: 9px; }
 }
 
 @media (prefers-reduced-motion: reduce) {

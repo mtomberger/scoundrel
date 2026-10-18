@@ -40,7 +40,6 @@
     return a;
   }
   const todayKey = () => { const d = new Date(); return d.getFullYear() * 10000 + (d.getMonth() + 1) * 100 + d.getDate(); };
-  const fmtDate = k => { const s = String(k); return `${s.slice(6, 8)}.${s.slice(4, 6)}.${s.slice(0, 4)}`; };
   const randomSeed = () => 100000 + Math.floor(Math.random() * 899999);
 
   /* ---------------- Zustand ---------------- */
@@ -70,7 +69,13 @@
   const weaponDamage = m => Math.max(0, m.rank - S.weapon.rank);
   const canFlee = () => !S.over && S.played === 0 && !S.avoidedLast && roomCards().length === 4 && S.dungeon.length > 0;
   const name = c => PX.info(c).name;
-  const modeText = () => S.mode === 'daily' ? `Tagesdungeon · ${fmtDate(S.day)}` : `Freies Spiel · Seed ${S.seed}`;
+  const t = I18N.t;
+  const modeText = () => S.mode === 'daily' ? t('mode.daily', { day: S.day }) : t('mode.free', { seed: S.seed });
+
+  /* ---------------- Sprache: gespeicherte Wahl, sonst Browsersprache ---------------- */
+  I18N.set(store.get('lang', null) || I18N.detect());
+  PX.setLang(I18N.lang);
+  I18N.apply();
 
   /* ---------------- DOM ---------------- */
   const el = {
@@ -102,15 +107,18 @@
   });
 
   for (let i = 0; i < MAX_HP; i++) el.hpBar.appendChild(document.createElement('i'));
-  $$('img[data-icon]').forEach(img => {
-    const [w, h] = PX.iconSize(img.dataset.icon);
-    img.src = PX.icon(img.dataset.icon);
-    img.width = w * 2; img.height = h * 2;
-  });
-  $$('img[data-card]').forEach(img => {
-    const s = img.dataset.card[0], r = +img.dataset.card.slice(1);
-    img.src = PX.card(mk(s, r));
-  });
+  function fillImages() {
+    $$('img[data-icon]').forEach(img => {
+      const [w, h] = PX.iconSize(img.dataset.icon);
+      img.src = PX.icon(img.dataset.icon);
+      img.width = w * 2; img.height = h * 2;
+    });
+    $$('img[data-card]').forEach(img => {
+      const s = img.dataset.card[0], r = +img.dataset.card.slice(1);
+      img.src = PX.card(mk(s, r));
+    });
+  }
+  fillImages();
 
   /* ---------------- Skalierung auf ganzzahliges Pixelraster ---------------- */
   function fit() {
@@ -141,12 +149,12 @@
 
   function effectHTML(c) {
     if (c.type === 'weapon') {
-      return `<span class="fx fx-w">${ico('sword')} ${c.rank} anlegen</span>`;
+      return `<span class="fx fx-w">${ico('sword')} ${t('fx.equip', { n: c.rank })}</span>`;
     }
     if (c.type === 'potion') {
-      if (S.potionUsed) return '<span class="fx fx-bad">verfällt</span>';
+      if (S.potionUsed) return `<span class="fx fx-bad">${t('fx.wasted')}</span>`;
       const gain = Math.min(MAX_HP, S.hp + c.rank) - S.hp;
-      return `<span class="fx fx-heal">+${gain} Leben</span>`;
+      return `<span class="fx fx-heal">${t('fx.heal', { n: gain })}</span>`;
     }
     const fist = c.rank, lethalF = fist >= S.hp;
     const fistHTML = `<span class="fx ${lethalF ? 'fx-lethal' : 'fx-dmg'}">${ico('fist')}-${fist}</span>`;
@@ -160,10 +168,10 @@
   function ariaFor(c, i) {
     const inf = PX.info(c);
     let what;
-    if (c.type === 'weapon') what = `Waffe Stärke ${c.rank}, anlegen`;
-    else if (c.type === 'potion') what = S.potionUsed ? `Heiltrank ${c.rank}, verfällt` : `Heiltrank, heilt ${Math.min(MAX_HP, S.hp + c.rank) - S.hp}`;
-    else what = `Monster ${c.rank}` + (weaponUsable(c) ? `, mit Waffe ${weaponDamage(c)} Schaden, mit Fäusten ${c.rank}` : `, ${c.rank} Schaden`);
-    return `Karte ${i + 1}: ${inf.name} (${inf.suit} ${inf.rank}). ${what}.`;
+    if (c.type === 'weapon') what = t('aria.weapon', { n: c.rank });
+    else if (c.type === 'potion') what = S.potionUsed ? t('aria.potionWasted', { n: c.rank }) : t('aria.potion', { n: Math.min(MAX_HP, S.hp + c.rank) - S.hp });
+    else what = weaponUsable(c) ? t('aria.monsterBoth', { n: c.rank, w: weaponDamage(c) }) : t('aria.monster', { n: c.rank });
+    return t('aria.card', { i: i + 1, name: inf.name, suit: inf.suit, rank: inf.rank, what });
   }
 
   function renderRoom(pending) {
@@ -175,7 +183,7 @@
         sl.img.src = PX.slot();
         sl.name.textContent = '';
         sl.fx.innerHTML = '';
-        sl.btn.setAttribute('aria-label', `Platz ${i + 1}: leer`);
+        sl.btn.setAttribute('aria-label', t('aria.empty', { i: i + 1 }));
         sl.btn.disabled = true;
         return;
       }
@@ -199,18 +207,18 @@
   }
 
   function renderStatus() {
-    el.roomNo.textContent = `Raum ${S.roomNo}`;
+    el.roomNo.textContent = t('room', { n: S.roomNo });
     el.pips.forEach((p, i) => p.classList.toggle('on', i < S.played));
-    el.potionFlag.textContent = S.potionUsed ? 'Trank genutzt' : 'Trank bereit';
+    el.potionFlag.textContent = t(S.potionUsed ? 'potion.used' : 'potion.ready');
     el.potionFlag.classList.toggle('used', S.potionUsed);
     const ok = canFlee() && !busy;
     el.flee.disabled = !ok;
     let hint;
     if (S.over) hint = '';
-    else if (S.avoidedLast && S.played === 0) hint = 'Du bist gerade erst geflohen.';
-    else if (S.played > 0) hint = 'Du hast den Raum betreten.';
-    else if (!S.dungeon.length) hint = 'Kein Ausweg mehr – der Dungeon ist leer.';
-    else hint = 'Alle 4 Karten wandern unter den Dungeon.';
+    else if (S.avoidedLast && S.played === 0) hint = t('hint.fled');
+    else if (S.played > 0) hint = t('hint.entered');
+    else if (!S.dungeon.length) hint = t('hint.empty');
+    else hint = t('hint.flee');
     el.fleeHint.textContent = hint;
   }
 
@@ -246,13 +254,13 @@
       const ph = document.createElement('img');
       ph.className = 'wcard placeholder'; ph.src = PX.slot(); ph.alt = '';
       el.wStack.appendChild(ph);
-      el.wName.textContent = 'Keine Waffe';
-      el.wLimit.textContent = 'Monster kämpfst du mit bloßen Fäusten.';
+      el.wName.textContent = t('w.none');
+      el.wLimit.textContent = t('w.noneHint');
       return;
     }
     const off = stackOffset(S.slain.length + extra);
     const img = document.createElement('img');
-    img.className = 'wcard'; img.src = PX.card(w); img.alt = `${name(w)}, Stärke ${w.rank}`;
+    img.className = 'wcard'; img.src = PX.card(w); img.alt = t('w.alt', { name: name(w), n: w.rank });
     el.wStack.appendChild(img);
     S.slain.forEach((m, i) => {
       const s = document.createElement('img');
@@ -260,17 +268,25 @@
       s.style.left = `calc(var(--p) * ${off * (i + 1)})`;
       el.wStack.appendChild(s);
     });
-    el.wName.textContent = `${name(w)} · Stärke ${w.rank}`;
-    el.wLimit.textContent = S.slain.length
-      ? `Nur noch gegen Monster bis ${lastSlain().rank}`
-      : 'Noch unbenutzt – schlägt jedes Monster.';
+    el.wName.textContent = t('w.name', { name: name(w), n: w.rank });
+    el.wLimit.textContent = S.slain.length ? t('w.limit', { n: lastSlain().rank }) : t('w.fresh');
+  }
+
+  // Verlaufseinträge werden als [Schlüssel, Parameter] gespeichert, damit ein
+  // Sprachwechsel auch ältere Zeilen übersetzt. Karten werden erst beim Anzeigen benannt.
+  function logText(entry) {
+    if (typeof entry === 'string') return entry;
+    const [key, p] = entry;
+    const q = {};
+    Object.entries(p || {}).forEach(([k, v]) => { q[k] = v && typeof v === 'object' && v.suit ? name(v) : v; });
+    return t(key, q);
   }
 
   function renderLog() {
-    el.log.innerHTML = S.log.slice(0, 3).map((t, i) => `<p class="${i ? '' : 'new'}">${t}</p>`).join('');
+    el.log.innerHTML = S.log.slice(0, 3).map((e, i) => `<p class="${i ? '' : 'new'}">${logText(e)}</p>`).join('');
   }
 
-  function log(t) { S.log.unshift(t); S.log.length = Math.min(S.log.length, 12); }
+  function log(key, p) { S.log.unshift([key, p || {}]); S.log.length = Math.min(S.log.length, 12); }
 
   /* ---------------- Effekte ---------------- */
   const wait = ms => new Promise(r => setTimeout(r, motionOK ? ms : 0));
@@ -413,7 +429,7 @@
     renderWeapon(); renderPiles();
     Sound.play('equip');
     burst(wBox, ['#eef4fa', '#f2c03a', '#8fb4d8'], 10);
-    log(`${name(c)} angelegt – Stärke ${c.rank}.`);
+    log('log.equip', { w: c, n: c.rank });
   }
 
   async function drink(c, from) {
@@ -423,8 +439,8 @@
     if (S.potionUsed) {
       S.stats.wasted++;
       Sound.play('waste');
-      floatText(hb, 'verfällt', 'f-muted');
-      log(`${name(c)} verfällt – nur ein Trank pro Raum.`);
+      floatText(hb, t('f.wasted'), 'f-muted');
+      log('log.wasted', { c });
     } else {
       const gain = Math.min(MAX_HP, S.hp + c.rank) - S.hp;
       S.hp += gain;
@@ -435,7 +451,7 @@
       floatText(hb, `+${gain}`, 'f-heal');
       burst(hb, ['#62d68c', '#d8ffd0', '#ffffff'], 12);
       bump(el.hpHeart);
-      log(gain ? `${name(c)} getrunken: +${gain} Leben.` : `${name(c)} getrunken – du warst schon bei vollen Kräften.`);
+      log(gain ? 'log.heal' : 'log.healFull', { c, n: gain });
     }
     renderHP(); renderPiles(); renderStatus();
   }
@@ -455,8 +471,8 @@
       renderWeapon();
       Sound.play(dmg ? 'slash' : 'block');
       burst(to, ['#ffffff', '#b4c2d0', '#e0394e'], 10);
-      if (dmg) { hurt(dmg); log(`${name(m)} mit ${name(S.weapon)} erschlagen: -${dmg} Leben.`); }
-      else { floatText(to, 'Pariert!', 'f-steel'); log(`${name(m)} mit ${name(S.weapon)} erschlagen – kein Schaden.`); }
+      if (dmg) { hurt(dmg); log('log.slay', { m, w: S.weapon, n: dmg }); }
+      else { floatText(to, t('f.parry'), 'f-steel'); log('log.slayClean', { m, w: S.weapon }); }
     } else {
       const dmg = m.rank;
       const hb = rect(el.hpHeart);
@@ -468,7 +484,7 @@
       S.stats.slainF++;
       Sound.play('hit');
       hurt(dmg);
-      log(`${name(m)} mit bloßen Fäusten besiegt: -${dmg} Leben.`);
+      log('log.fist', { m, n: dmg });
     }
     renderHP(); renderPiles(); renderStatus();
   }
@@ -493,7 +509,7 @@
     S.dungeon.push(...cards);
     S.avoidedLast = true;
     S.stats.fled++;
-    log('Geflohen! Die vier Karten liegen jetzt unter dem Dungeon.');
+    log('log.flee');
     await startRoom();
     busy = false;
     render();
@@ -504,24 +520,22 @@
     S.over = true;
     S.won = won;
     S.stats.end = Date.now();
-    let calc;
     if (won) {
       S.score = S.hp;
-      calc = `${S.hp} Leben übrig`;
+      S.calc = { hp: S.hp, bonus: 0 };
       if (S.hp === MAX_HP && S.last && S.last.type === 'potion') {
         S.score += S.last.rank;
-        calc += ` + ${S.last.rank} (letzter Trank)`;
+        S.calc.bonus = S.last.rank;
       }
-      log('Der Dungeon ist leer. Du hast überlebt!');
+      log('log.win');
     } else {
       S.hp = 0;
       const rest = [...S.dungeon, ...roomCards()].filter(c => c.type === 'monster');
       const sum = rest.reduce((a, c) => a + c.rank, 0);
       S.score = -sum;
-      calc = `${rest.length} Monster übrig, zusammen ${sum}`;
-      log('Du bist im Dungeon gefallen.');
+      S.calc = { count: rest.length, sum };
+      log('log.death');
     }
-    S.calc = calc;
 
     // Rekorde
     const rec = store.get('records', { best: null, runs: 0, wins: 0, daily: {} });
@@ -560,22 +574,21 @@
     const c = S.room[i];
     choiceSlot = i;
     const usable = weaponUsable(c);
+    const lethalTag = ` · ${t('ch.lethal')}`;
     el.chTitle.textContent = `${name(c)} · ${c.rank}`;
     if (usable) {
       const w = weaponDamage(c);
       el.chWeapon.hidden = false;
-      el.chWeapon.innerHTML = `${ico('sword')}<span>Waffe <small>[W]</small><b>${w ? '-' + w + ' Leben' : 'kein Schaden'}${w >= S.hp && w ? ' · tödlich' : ''}</b></span>`;
+      el.chWeapon.innerHTML = `${ico('sword')}<span>${t('ch.weapon')} <small>[W]</small><b>${w ? t('ch.dmg', { n: w }) : t('ch.noDmg')}${w >= S.hp && w ? lethalTag : ''}</b></span>`;
       el.chNote.textContent = !S.slain.length || c.rank < lastSlain().rank
-        ? `Danach trifft die Waffe nur noch Monster bis ${c.rank}.`
-        : `Die Waffe bleibt für Monster bis ${c.rank} nutzbar.`;
+        ? t('ch.noteLimit', { n: c.rank })
+        : t('ch.noteKeep', { n: c.rank });
     } else {
       el.chWeapon.hidden = true;
-      el.chNote.textContent = S.weapon
-        ? `Deine Waffe trifft nur Monster bis ${lastSlain().rank}.`
-        : 'Du hast keine Waffe.';
+      el.chNote.textContent = S.weapon ? t('ch.noteBlocked', { n: lastSlain().rank }) : t('ch.noWeapon');
     }
     const lethal = c.rank >= S.hp;
-    el.chFist.innerHTML = `${ico('fist')}<span>Faust <small>[F]</small><b>-${c.rank} Leben${lethal ? ' · tödlich' : ''}</b></span>`;
+    el.chFist.innerHTML = `${ico('fist')}<span>${t('ch.fist')} <small>[F]</small><b>${t('ch.dmg', { n: c.rank })}${lethal ? lethalTag : ''}</b></span>`;
     el.chFist.classList.toggle('lethal', lethal);
     el.choice.hidden = false;
 
@@ -668,11 +681,11 @@
   function recordsText() {
     const rec = store.get('records', { best: null, runs: 0, wins: 0, daily: {} });
     const parts = [];
-    if (rec.best != null) parts.push(`Bestwert ${rec.best}`);
-    if (rec.runs) parts.push(`${rec.wins} von ${rec.runs} Läufen überlebt`);
+    if (rec.best != null) parts.push(t('rec.best', { n: rec.best }));
+    if (rec.runs) parts.push(t('rec.runs', { wins: rec.wins, runs: rec.runs }));
     const d = rec.daily[String(todayKey())];
-    if (d != null) parts.push(`Heute im Tagesdungeon: ${d}`);
-    return parts.join(' · ') || 'Noch kein Lauf gespielt.';
+    if (d != null) parts.push(t('rec.daily', { n: d }));
+    return parts.join(' · ') || t('rec.none');
   }
 
   function showTitle() {
@@ -683,30 +696,40 @@
     show(OV.title);
   }
 
-  function showEnd() {
+  function calcText(c) {
+    if (!c || typeof c === 'string') return c || '';
+    if (c.hp != null) return t('calc.won', { n: c.hp }) + (c.bonus ? t('calc.bonus', { n: c.bonus }) : '');
+    return t('calc.lost', { count: c.count, sum: c.sum });
+  }
+
+  function fillEnd() {
     const won = S.won;
-    $('#end-h').textContent = won ? 'Dungeon bezwungen!' : 'Du bist gefallen.';
+    $('#end-h').textContent = t(won ? 'end.won' : 'end.lost');
     OV.end.classList.toggle('won', won);
     $('#end-mode').textContent = modeText();
     $('#end-score').textContent = String(S.score);
-    $('#end-calc').textContent = S.calc;
+    $('#end-calc').textContent = calcText(S.calc);
     $('#end-best').hidden = !S.isBest;
     const secs = Math.round((S.stats.end - S.stats.start) / 1000);
     const time = `${Math.floor(secs / 60)}:${String(secs % 60).padStart(2, '0')}`;
     const st = S.stats;
     const rows = [
-      ['Räume', S.roomNo],
-      ['Mit Waffe erschlagen', st.slainW],
-      ['Mit Fäusten besiegt', st.slainF],
-      ['Schaden erlitten', st.dmg],
-      ['Geheilt', st.healed + (st.wasted ? ` (${st.wasted} Trank verfallen)` : '')],
-      ['Geflohen', st.fled],
-      ['Karten übrig', S.dungeon.length + roomCards().length],
-      ['Zeit', time]
+      ['st.rooms', S.roomNo],
+      ['st.slainW', st.slainW],
+      ['st.slainF', st.slainF],
+      ['st.dmg', st.dmg],
+      ['st.healed', st.healed + (st.wasted ? t('st.wasted', { n: st.wasted }) : '')],
+      ['st.fled', st.fled],
+      ['st.left', S.dungeon.length + roomCards().length],
+      ['st.time', time]
     ];
-    $('#end-stats').innerHTML = rows.map(([k, v]) => `<div><dt>${k}</dt><dd>${v}</dd></div>`).join('');
+    $('#end-stats').innerHTML = rows.map(([k, v]) => `<div><dt>${t(k)}</dt><dd>${v}</dd></div>`).join('');
     $('#e-same').hidden = S.mode === 'daily';
-    $('#e-again').textContent = S.mode === 'daily' ? 'Tagesdungeon nochmal' : 'Neuer Dungeon';
+    $('#e-again').textContent = t(S.mode === 'daily' ? 'e.againDaily' : 'e.againFree');
+  }
+
+  function showEnd() {
+    fillEnd();
     show(OV.end);
   }
 
@@ -716,9 +739,7 @@
     newRun(mode, seed);
     shownHP = MAX_HP;
     busy = true;
-    log(mode === 'daily'
-      ? `Tagesdungeon vom ${fmtDate(S.day)}. Alle spielen heute dieselbe Kartenfolge.`
-      : 'Du steigst hinab in den Dungeon. Viel Glück, Schurke.');
+    log(mode === 'daily' ? 'log.startDaily' : 'log.start', { day: S.day });
     render();
     await wait(150);
     await startRoom();
@@ -765,6 +786,32 @@
   syncSound();
   document.addEventListener('pointerdown', () => Sound.unlock(), { once: true });
 
+  /* ---------------- Sprache umschalten ---------------- */
+  let backdrop = null;   // Platzhalter-Tisch hinter dem Titelbild
+  const langBtn = $('#btn-lang');
+  function syncLang() {
+    langBtn.textContent = I18N.lang.toUpperCase();
+    $$('.lang-opt').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.lang === I18N.lang)));
+  }
+  function setLang(l) {
+    if (l === I18N.lang) return;
+    I18N.set(l);
+    PX.setLang(l);
+    store.set('lang', l);
+    I18N.apply();
+    fillImages();
+    syncLang();
+    closeChoice();
+    const view = S || backdrop;
+    if (view && !busy) { const keep = S; S = view; render(); S = keep; }
+    if (!OV.title.hidden) $('#t-records').textContent = recordsText();
+    if (S && !OV.pause.hidden) $('#pause-mode').textContent = modeText();
+    if (S && !OV.end.hidden) fillEnd();
+  }
+  langBtn.addEventListener('click', () => { Sound.play('click'); setLang(I18N.lang === 'de' ? 'en' : 'de'); });
+  $$('.lang-opt').forEach(b => b.addEventListener('click', () => { Sound.play('click'); setLang(b.dataset.lang); }));
+  syncLang();
+
   /* ---------------- Titelbild ---------------- */
   const fan = $('#title-fan');
   [mk('S', 14), mk('D', 10), mk('H', 9), mk('C', 6)].forEach((c, i) => {
@@ -788,6 +835,7 @@
     for (let i = 0; i < 4; i++) S.room[i] = S.dungeon.shift();
     S.roomNo = 1;
     render();
+    backdrop = S;
     S = null;
     showTitle();
   }

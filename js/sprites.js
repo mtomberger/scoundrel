@@ -23,7 +23,7 @@ const PX = (() => {
   /* ------------------------------------------------------------------ */
   const MONSTERS = {
     2: {
-      name: 'Ratte',
+      name: { de: 'Ratte', en: 'Rat' },
       rows: [
         '..........aa....',
         '.........appa...',
@@ -41,7 +41,7 @@ const PX = (() => {
       alt: { a: '#6e6876', b: '#47424e', c: '#938d9c' }
     },
     3: {
-      name: 'Fledermaus', float: true,
+      name: { de: 'Fledermaus', en: 'Bat' }, float: true,
       rows: M([
         'a.......',
         'aa....a.',
@@ -56,7 +56,7 @@ const PX = (() => {
       alt: { a: '#8a6a4e', b: '#5a4232', e: '#ff4a3a' }
     },
     4: {
-      name: 'Schleim',
+      name: { de: 'Schleim', en: 'Slime' },
       rows: [
         '......aaa......',
         '....aaaaaaa....',
@@ -74,7 +74,7 @@ const PX = (() => {
       alt: { a: '#6aa8ff', b: '#3a5ec8', c: '#d8ecff' }
     },
     5: {
-      name: 'Spinne',
+      name: { de: 'Spinne', en: 'Spider' },
       rows: M([
         '......aa',
         '....aaaa',
@@ -92,7 +92,7 @@ const PX = (() => {
       alt: { a: '#6a4a8e', b: '#46306a', c: '#9a7ac0' }
     },
     6: {
-      name: 'Goblin',
+      name: { de: 'Goblin', en: 'Goblin' },
       rows: M([
         '.....aaa',
         '....aaaa',
@@ -112,7 +112,7 @@ const PX = (() => {
       alt: { a: '#d0743a', b: '#9a4a22', n: '#4e5a6a', N: '#333a46' }
     },
     7: {
-      name: 'Skelett',
+      name: { de: 'Skelett', en: 'Skeleton' },
       rows: M([
         '.....www',
         '....wwww',
@@ -134,7 +134,7 @@ const PX = (() => {
       alt: { e: '#4ad0ff' }
     },
     8: {
-      name: 'Zombie',
+      name: { de: 'Zombie', en: 'Zombie' },
       rows: [
         '...NNN.NNNN....',
         '...NNNNNNNNN...',
@@ -154,7 +154,7 @@ const PX = (() => {
       alt: { a: '#a8b0c0', b: '#7a8298', c: '#8a5a4a', d: '#5e3a30' }
     },
     9: {
-      name: 'Ork',
+      name: { de: 'Ork', en: 'Orc' },
       rows: M([
         '....dddd',
         '...dsddd',
@@ -173,7 +173,7 @@ const PX = (() => {
       alt: { a: '#7a8a9a', b: '#56626e', n: '#5a2a2a', N: '#3a1818' }
     },
     10: {
-      name: 'Geist', float: true,
+      name: { de: 'Geist', en: 'Ghost' }, float: true,
       rows: M([
         '.....aaa',
         '....acaa',
@@ -193,7 +193,7 @@ const PX = (() => {
       alt: { a: '#e2e8ff', b: '#9faee0' }
     },
     11: {
-      name: 'Dunkelritter',
+      name: { de: 'Dunkelritter', en: 'Dark Knight' },
       rows: M([
         '......rr',
         '.......r',
@@ -213,7 +213,7 @@ const PX = (() => {
       alt: { e: '#ff3030', r: '#c02a3a' }
     },
     12: {
-      name: 'Hexe',
+      name: { de: 'Hexe', en: 'Witch' },
       rows: [
         '..........h....',
         '.........hh....',
@@ -236,7 +236,7 @@ const PX = (() => {
       alt: { a: '#dccbd8', b: '#a898b0', h: '#22202e', f: '#e04a3a', v: '#2e1a2e', V: '#1e101e' }
     },
     13: {
-      name: 'Lichkönig',
+      name: { de: 'Lichkönig', en: 'Lich King' },
       rows: M([
         '...y.y.y',
         '...yyyyy',
@@ -255,7 +255,7 @@ const PX = (() => {
       alt: { V: '#3a1e5a', v: '#c070ff' }
     },
     14: {
-      name: 'Drache',
+      name: { de: 'Drache', en: 'Dragon' },
       rows: M([
         'w.......',
         'ww......',
@@ -281,7 +281,7 @@ const PX = (() => {
   /* ------------------------------------------------------------------ */
   const WEAPONS = {
     2: {
-      name: 'Knüppel',
+      name: { de: 'Knüppel', en: 'Cudgel' },
       rows: M([
         '......nn',
         '.....nnn',
@@ -299,7 +299,7 @@ const PX = (() => {
       pal: { n: '#9a6a3a', N: '#6a4424', c: '#c89a5a', g: '#a8b0bc' }
     },
     3: {
-      name: 'Dolch',
+      name: { de: 'Dolch', en: 'Dagger' },
       rows: M([
         '.......l',
         '......sl',
@@ -314,7 +314,7 @@ const PX = (() => {
       ])
     },
     4: {
-      name: 'Kurzschwert',
+      name: { de: 'Kurzschwert', en: 'Shortsword' },
       rows: M([
         '.......l',
         '......sl',
@@ -333,7 +333,7 @@ const PX = (() => {
       pal: { s: '#d6a866', l: '#f8e0a0', y: '#8a6a3a' }
     },
     5: {
-      name: 'Doppelaxt',
+      name: { de: 'Doppelaxt', en: 'Double Axe' },
       rows: M([
         '.......s',
         'l......n',
@@ -354,7 +354,7 @@ const PX = (() => {
       pal: { l: '#eef4fa' }
     },
     6: {
-      name: 'Streitkolben',
+      name: { de: 'Streitkolben', en: 'Mace' },
       rows: M([
         '.......l',
         '....dddd',
@@ -375,7 +375,7 @@ const PX = (() => {
       pal: { l: '#f0f4f8', n: '#7a4a2a' }
     },
     7: {
-      name: 'Speer',
+      name: { de: 'Speer', en: 'Spear' },
       rows: M([
         '.......l',
         '......sl',
@@ -400,7 +400,7 @@ const PX = (() => {
       ])
     },
     8: {
-      name: 'Langschwert',
+      name: { de: 'Langschwert', en: 'Longsword' },
       rows: M([
         '.......l',
         '......sl',
@@ -423,7 +423,7 @@ const PX = (() => {
       ])
     },
     9: {
-      name: 'Kriegshammer',
+      name: { de: 'Kriegshammer', en: 'War Hammer' },
       rows: M([
         '.......s',
         '.......s',
@@ -445,7 +445,7 @@ const PX = (() => {
       pal: { d: '#4e5666', s: '#8a96a8', l: '#c8d2de' }
     },
     10: {
-      name: 'Runenklinge',
+      name: { de: 'Runenklinge', en: 'Rune Blade' },
       rows: M([
         '.......c',
         '......uc',
@@ -517,10 +517,10 @@ const PX = (() => {
     '...ggggg'
   ]);
   const POTIONS = [
-    { max: 4, name: 'Kleiner Heiltrank', rows: POT_S },
-    { max: 7, name: 'Heiltrank', rows: POT_M },
-    { max: 9, name: 'Großer Heiltrank', rows: POT_L },
-    { max: 10, name: 'Elixier', rows: POT_L, pal: { r: '#f04a8a', R: '#a82a60', y: '#fff07a', n: '#e8b64a' } }
+    { max: 4, name: { de: 'Kleiner Trank', en: 'Small Potion' }, rows: POT_S },
+    { max: 7, name: { de: 'Heiltrank', en: 'Health Potion' }, rows: POT_M },
+    { max: 9, name: { de: 'Großer Trank', en: 'Large Potion' }, rows: POT_L },
+    { max: 10, name: { de: 'Elixier', en: 'Elixir' }, rows: POT_L, pal: { r: '#f04a8a', R: '#a82a60', y: '#fff07a', n: '#e8b64a' } }
   ];
 
   /* ------------------------------------------------------------------ */
@@ -540,7 +540,9 @@ const PX = (() => {
     B: ['##.', '#.#', '##.', '#.#', '##.'],
     D: ['##.', '#.#', '#.#', '#.#', '##.'],
     K: ['#.#', '#.#', '##.', '#.#', '#.#'],
-    A: ['.#.', '#.#', '###', '#.#', '#.#']
+    A: ['.#.', '#.#', '###', '#.#', '#.#'],
+    J: ['###', '..#', '..#', '#.#', '.#.'],
+    Q: ['.#.', '#.#', '#.#', '##.', '.##']
   };
   const SUIT_ICON = {
     H: ['.##.##.', '#######', '#######', '.#####.', '..###..', '...#...'],
@@ -652,9 +654,12 @@ const PX = (() => {
   /* ------------------------------------------------------------------ */
   /* Karten                                                              */
   /* ------------------------------------------------------------------ */
-  const RANK_LABEL = { 11: 'B', 12: 'D', 13: 'K', 14: 'A' };
-  const RANK_NAME = { 11: 'Bube', 12: 'Dame', 13: 'König', 14: 'Ass' };
-  const SUIT_NAME = { C: 'Kreuz', S: 'Pik', D: 'Karo', H: 'Herz' };
+  // Bildkarten tragen je nach Sprache andere Buchstaben (Bube/Dame vs. Jack/Queen).
+  let lang = 'de';
+  const RANK_LABEL = { de: { 11: 'B', 12: 'D', 13: 'K', 14: 'A' }, en: { 11: 'J', 12: 'Q', 13: 'K', 14: 'A' } };
+  const RANK_NAME = { de: { 11: 'Bube', 12: 'Dame', 13: 'König', 14: 'Ass' }, en: { 11: 'Jack', 12: 'Queen', 13: 'King', 14: 'Ace' } };
+  const SUIT_NAME = { de: { C: 'Kreuz', S: 'Pik', D: 'Karo', H: 'Herz' }, en: { C: 'Clubs', S: 'Spades', D: 'Diamonds', H: 'Hearts' } };
+  const rankLabel = r => RANK_LABEL[lang][r] || String(r);
 
   function defOf(card) {
     if (card.type === 'monster') return MONSTERS[card.rank];
@@ -727,7 +732,7 @@ const PX = (() => {
     frame(ctx, '#eadbb6', '#fff4d6', '#bca57a');
     const red = card.suit === 'H' || card.suit === 'D';
     const ink = red ? '#b8263a' : '#24172a';
-    text(ctx, RANK_LABEL[card.rank] || String(card.rank), 3, 3, ink);
+    text(ctx, rankLabel(card.rank), 3, 3, ink);
     mask(ctx, SUIT_ICON[card.suit], 24, card.suit === 'H' ? 3 : 2, ink);
 
     // Bildfenster (Elite-Karten mit Goldrahmen)
@@ -828,15 +833,17 @@ const PX = (() => {
   };
 
   function info(card) {
-    const d = defOf(card);
-    const kind = card.type === 'monster' ? 'Monster' : card.type === 'weapon' ? 'Waffe' : 'Heiltrank';
-    const rank = RANK_NAME[card.rank] || String(card.rank);
-    return { name: d.name, kind, rank, suit: SUIT_NAME[card.suit], label: RANK_LABEL[card.rank] || String(card.rank) };
+    return {
+      name: defOf(card).name[lang],
+      rank: RANK_NAME[lang][card.rank] || String(card.rank),
+      suit: SUIT_NAME[lang][card.suit]
+    };
   }
 
   return {
     CW, CH,
-    card: c => url('c' + c.suit + c.rank, () => drawFace(c)),
+    setLang(l) { lang = RANK_LABEL[l] ? l : 'en'; },
+    card: c => url('c' + c.suit + c.rank + (c.rank > 10 ? lang : ''), () => drawFace(c)),
     back: () => url('back', drawBack),
     slot: () => url('slot', drawSlot),
     tile: () => url('tile', drawTile),

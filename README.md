@@ -1,98 +1,115 @@
 # Scoundrel
 
-Ein Browserspiel in Pixel-Art nach dem Solitär-Kartenspiel **Scoundrel** von Zach Gage und Kurt Bieg (2011). Du kämpfst dich mit 20 Lebenspunkten durch einen Dungeon aus 44 Spielkarten. Monster, Waffen und Heiltränke liegen dabei offen vor dir.
+A pixel-art browser game based on the solitaire card game **Scoundrel** by Zach Gage and Kurt Bieg (2011). You fight your way through a dungeon of 44 playing cards with 20 health. Monsters, weapons and health potions are dealt face up in front of you.
 
-![Spieltisch mit Raum, angelegter Doppelaxt und erschlagenen Monstern](docs/screenshot.png)
+![Game table with a room, an equipped double axe and slain monsters](docs/screenshot.png)
 
-Die Oberfläche ist komplett auf Deutsch. Das Spiel läuft ohne Installation und ohne Build-Schritt direkt im Browser, auch auf dem Handy.
+The game is available in **English and German**. On first launch it follows your browser language: German if it starts with `de`, English otherwise. You can switch at any time on the title screen or with the `EN`/`DE` button in the top bar.
 
-## Funktionen
+It runs directly in the browser without installation or a build step, on desktop and on phones.
 
-- **Alle 44 Karten als Pixel-Art:** 13 Monster von der Ratte bis zum Drachen, in Kreuz- und Pik-Farbvarianten, 9 Waffen vom Knüppel bis zur Runenklinge und Heiltränke in mehreren Größen. Alle Grafiken werden zur Laufzeit auf Canvas gezeichnet, Bilddateien gibt es keine.
-- **Regeln wie im Original** (Version 1.0 vom 15. August 2011), inklusive Waffen-Stapelregel und offizieller Wertung.
-- **Scharfe Pixel auf jedem Bildschirm:** Das Layout skaliert in ganzzahligen Schritten, vom Handy bis 1920 × 1080.
-- **Animationen und Sound:** Karten fliegen über den Tisch, Treffer lassen das Bild wackeln. Soundeffekte und eine optionale Chiptune-Musik entstehen per WebAudio.
-- **Tagesdungeon:** Alle Spieler bekommen am selben Tag dieselbe Kartenfolge.
-- **Fortschritt im Browser:** Bestwerte und ein laufendes Spiel bleiben im `localStorage` des jeweiligen Browsers gespeichert.
+## Built with Claude
 
-## Spielregeln in Kürze
+This project was programmed entirely with [Claude Code](https://claude.com/claude-code), using the model Claude Opus 5.5. A human wrote the requests and supplied the original rules PDF. Claude wrote the code, the pixel art, the sound and the texts.
 
-| Karten | Bedeutung |
+| | |
 | --- | --- |
-| ♣ ♠ Kreuz und Pik (26) | **Monster.** Schaden = Wert: 2–10, Bube 11, Dame 12, König 13, Ass 14 |
-| ♦ Karo 2–10 (9) | **Waffen.** Ziehen ihren Wert vom Monsterschaden ab |
-| ♥ Herz 2–10 (9) | **Heiltränke.** Heilen ihren Wert, aber nie über 20 |
+| Prompts | 9 |
+| Tokens processed | about 33 million |
+| … of which output tokens | about 270,000 |
 
-Rote Bildkarten, rote Asse und Joker sind aussortiert.
+The token figures were measured from the Claude Code session log when this README was written. Most of the processed tokens are cache reads: on every step the model re-reads the conversation so far, which is billed at a much lower rate than new input. The prompts cover the whole history of the repository, from the first game build through Git setup, GitHub Pages, the license and README, to the English translation.
 
-1. Es liegen immer 4 Karten offen, das ist der **Raum**.
-2. Du kannst **fliehen**. Dann wandern alle 4 Karten unter den Dungeon. Zweimal hintereinander fliehen geht nicht.
-3. Bleibst du, nimmst du **3 der 4 Karten** nacheinander. Die vierte bleibt für den nächsten Raum liegen.
-4. **Waffen** musst du anlegen. Die alte Waffe und die Monster darauf kommen auf die Ablage.
-5. **Heiltränke:** Pro Raum wirkt nur einer, ein zweiter verfällt ohne Wirkung.
-6. **Kampf:** Mit bloßen Fäusten verlierst du den vollen Monsterwert. Mit der Waffe verlierst du nur *Monster minus Waffe* (mindestens 0). Danach trifft die Waffe nur noch Monster, die **kleiner oder gleich** dem zuletzt damit erschlagenen sind.
+## Features
 
-**Wertung:** Kommst du durch, sind deine restlichen Leben deine Punkte. Bei genau 20 Leben zählt der Wert eines Heiltranks dazu, wenn er deine letzte Karte war. Stirbst du, wird die Summe aller übrigen Monster abgezogen und das Ergebnis ist negativ.
+- **All 44 cards in pixel art:** 13 monsters from the rat to the dragon, in club and spade color variants, 9 weapons from the cudgel to the rune blade, and health potions in several sizes. All graphics are drawn on canvas at runtime. There are no image files.
+- **Original rules** (version 1.0 of August 15, 2011), including the weapon stacking rule and the official scoring.
+- **Crisp pixels on every screen:** the layout scales in whole-pixel steps, from phones up to 1920 × 1080.
+- **Animation and sound:** cards fly across the table and hits shake the screen. Sound effects and optional chiptune music are generated with WebAudio.
+- **Daily dungeon:** everyone gets the same card order on the same day.
+- **Progress in the browser:** best scores, language choice and a running game are kept in the browser's `localStorage`.
 
-Die vollständigen Regeln mit Beispiel stehen im Spiel unter **?**.
+## Rules in brief
 
-## Steuerung
+| Cards | Meaning |
+| --- | --- |
+| ♣ ♠ Clubs and spades (26) | **Monsters.** Damage equals value: 2–10, Jack 11, Queen 12, King 13, Ace 14 |
+| ♦ Diamonds 2–10 (9) | **Weapons.** Reduce a monster's damage by their value |
+| ♥ Hearts 2–10 (9) | **Health potions.** Heal their value, never above 20 |
 
-| Aktion | Maus / Touch | Tastatur |
+Red face cards, red aces and jokers are removed.
+
+1. There are always 4 cards face up. This is the **room**.
+2. You may **flee**. All 4 cards then go to the bottom of the dungeon. You cannot flee twice in a row.
+3. If you stay, you take **3 of the 4 cards**, one at a time. The fourth card stays for the next room.
+4. **Weapons** must be equipped. Your old weapon and the monsters on it go to the discard pile.
+5. **Health potions:** only one works per room. A second one is wasted.
+6. **Combat:** barehanded you lose the monster's full value. With your weapon you only lose *monster minus weapon* (at least 0). After that, the weapon only hits monsters **less than or equal** to the last monster it slew.
+
+**Scoring:** if you survive, your remaining health is your score. With exactly 20 health, the value of a health potion is added if it was your last card. If you die, the sum of all remaining monsters is subtracted and your score is negative.
+
+The full rules with an example are in the game under **?**.
+
+## Controls
+
+| Action | Mouse / touch | Keyboard |
 | --- | --- | --- |
-| Karte nehmen | Karte anklicken oder antippen | `1` – `4` |
-| Mit Waffe kämpfen | „Waffe“ im Kampfmenü | `W` |
-| Mit Fäusten kämpfen | „Faust“ im Kampfmenü | `F` |
-| Fliehen | „Fliehen“ | `F` |
-| Ton an/aus | Lautsprecher-Symbol | `M` |
-| Menü / Abbrechen | Menü-Symbol | `Esc` |
+| Take a card | Click or tap the card | `1` – `4` |
+| Fight with weapon | "Weapon" in the fight menu | `W` |
+| Fight barehanded | "Fists" in the fight menu | `F` |
+| Flee | "Flee" | `F` |
+| Sound on/off | Speaker icon | `M` |
+| Menu / cancel | Menu icon | `Esc` |
 
-## Lokal spielen
+## Play locally
 
-`index.html` im Browser öffnen, mehr ist nicht nötig. Die Pixelschriften kommen von Google Fonts. Ohne Internetverbindung nutzt das Spiel eine Ersatzschrift.
+Open `index.html` in a browser. That's all. The pixel fonts load from Google Fonts. Without an internet connection the game uses a fallback font.
 
-Alternativ geht es mit einem lokalen Webserver, zum Beispiel:
+You can also use a local web server, for example:
 
 ```bash
 python -m http.server 8765
 ```
 
-Danach `http://localhost:8765` aufrufen.
+Then open `http://localhost:8765`.
 
-## Mit GitHub Pages veröffentlichen
+## Publish with GitHub Pages
 
-1. Repository auf GitHub pushen.
-2. **Settings → Pages → Build and deployment**: Bei *Source* „Deploy from a branch“ wählen, Branch `main`, Ordner `/ (root)`.
-3. Nach kurzer Zeit läuft das Spiel unter `https://<benutzername>.github.io/<repository>/`.
+1. Push the repository to GitHub.
+2. Go to **Settings → Pages → Build and deployment**. Under *Source* choose "Deploy from a branch", branch `main`, folder `/ (root)`.
+3. After a short while the game is live at `https://<username>.github.io/<repository>/`.
 
-Mit einem kostenlosen GitHub-Konto funktioniert Pages nur bei öffentlichen Repositories.
+With a free GitHub account, Pages only works for public repositories.
 
-## Projektstruktur
+## Project structure
 
 ```text
-index.html       Seitengerüst, Overlays und Spielregeln
-css/style.css    Gestaltung, Pixelraster und Layout für schmale Bildschirme
-js/sprites.js    Pixel-Art: Sprites, Kartenrenderer, Icons
-js/audio.js      Soundeffekte und Musik per WebAudio
-js/game.js       Spiellogik, Darstellung, Animationen und Eingaben
-build.mjs        Erzeugt eine einzelne HTML-Datei mit eingebettetem CSS und JS
+index.html       Page skeleton and overlays; texts come from js/i18n.js
+css/style.css    Styling, pixel grid and narrow-screen layout
+js/i18n.js       English and German texts, language detection
+js/sprites.js    Pixel art: sprites, card renderer, icons, card names
+js/audio.js      Sound effects and music with WebAudio
+js/game.js       Game logic, rendering, animation and input
+build.mjs        Builds a single HTML file with inlined CSS and JS
 ```
 
-## Einzeldatei erzeugen
+To add a language, add a block to `STR` in `js/i18n.js`, add the card names in `js/sprites.js` and add a button to the language switch in `index.html`.
 
-Für Umgebungen, die genau eine HTML-Datei erwarten (zum Beispiel Claude-Artifacts), bettet `build.mjs` CSS und JavaScript ein und lässt das HTML-Gerüst weg:
+## Single-file build
+
+For environments that expect exactly one HTML file (for example Claude artifacts), `build.mjs` inlines CSS and JavaScript and leaves out the HTML skeleton:
 
 ```bash
 node build.mjs
 ```
 
-Das Ergebnis landet in `dist/scoundrel.html`. Der Ordner steht in der `.gitignore`. Für GitHub Pages wird er nicht gebraucht.
+The result is written to `dist/scoundrel.html`. The folder is listed in `.gitignore`. GitHub Pages does not need it.
 
 ## Credits
 
-- **Spielidee und Regeln:** *Scoundrel* von Zach Gage und Kurt Bieg (2011). Dieses Projekt ist eine inoffizielle Fan-Umsetzung und steht in keiner Verbindung zu den Autoren.
-- **Schriften:** [Press Start 2P](https://fonts.google.com/specimen/Press+Start+2P) von CodeMan38 und [VT323](https://fonts.google.com/specimen/VT323) von Peter Hull, beide unter der SIL Open Font License und über Google Fonts eingebunden.
+- **Game design and rules:** *Scoundrel* by Zach Gage and Kurt Bieg (2011). This project is an unofficial fan adaptation and is not affiliated with the authors.
+- **Fonts:** [Press Start 2P](https://fonts.google.com/specimen/Press+Start+2P) by CodeMan38 and [VT323](https://fonts.google.com/specimen/VT323) by Peter Hull, both under the SIL Open Font License and loaded from Google Fonts.
 
-## Lizenz
+## License
 
-Code und Pixel-Art stehen unter der [MIT-Lizenz](LICENSE).
+Code and pixel art are released under the [MIT License](LICENSE).
