@@ -16,29 +16,8 @@
     del(k) { try { localStorage.removeItem('scoundrel.' + k); } catch (e) { /* ignorieren */ } }
   };
 
-  /* ---------------- Zufall & Karten ---------------- */
-  function mulberry32(a) {
-    return () => {
-      a |= 0; a = a + 0x6D2B79F5 | 0;
-      let t = Math.imul(a ^ a >>> 15, 1 | a);
-      t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t;
-      return ((t ^ t >>> 14) >>> 0) / 4294967296;
-    };
-  }
-  const mk = (suit, rank) => ({ id: suit + rank, suit, rank, type: suit === 'D' ? 'weapon' : suit === 'H' ? 'potion' : 'monster' });
-  function buildDeck() {
-    const d = [];
-    for (const s of ['C', 'S']) for (let r = 2; r <= 14; r++) d.push(mk(s, r));
-    for (const s of ['D', 'H']) for (let r = 2; r <= 10; r++) d.push(mk(s, r));
-    return d;
-  }
-  function shuffle(a, rnd) {
-    for (let i = a.length - 1; i > 0; i--) {
-      const j = Math.floor(rnd() * (i + 1));
-      [a[i], a[j]] = [a[j], a[i]];
-    }
-    return a;
-  }
+  /* ---------------- Karten (Regelkern in js/rules.js) ---------------- */
+  const { mk } = Rules;
   const todayKey = () => { const d = new Date(); return d.getFullYear() * 10000 + (d.getMonth() + 1) * 100 + d.getDate(); };
   const randomSeed = () => 100000 + Math.floor(Math.random() * 899999);
 
@@ -52,7 +31,7 @@
     if (mode === 'daily') seed = day * 7 + 13;
     S = {
       mode, seed, day,
-      dungeon: shuffle(buildDeck(), mulberry32(seed)),
+      dungeon: mode === 'easy' ? Rules.easyDeal(seed) : Rules.deal(seed),
       room: [null, null, null, null],
       discard: 0,
       hp: MAX_HP, weapon: null, slain: [],
@@ -70,7 +49,8 @@
   const canFlee = () => !S.over && S.played === 0 && !S.avoidedLast && roomCards().length === 4 && S.dungeon.length > 0;
   const name = c => PX.info(c).name;
   const t = I18N.t;
-  const modeText = () => S.mode === 'daily' ? t('mode.daily', { day: S.day }) : t('mode.free', { seed: S.seed });
+  const modeText = () => S.mode === 'daily' ? t('mode.daily', { day: S.day })
+    : t(S.mode === 'easy' ? 'mode.easy' : 'mode.free', { seed: S.seed });
 
   /* ---------------- Sprache: gespeicherte Wahl, sonst Browsersprache ---------------- */
   I18N.set(store.get('lang', null) || I18N.detect());
@@ -546,7 +526,9 @@
       const k = String(S.day);
       if (rec.daily[k] == null || S.score > rec.daily[k]) { rec.daily[k] = S.score; isBest = true; }
     }
-    if (rec.best == null || S.score > rec.best) { rec.best = S.score; isBest = true; }
+    // Der einfache Dungeon führt eine eigene Bestenliste, damit er den normalen Bestwert nicht verfälscht.
+    const bestKey = S.mode === 'easy' ? 'bestEasy' : 'best';
+    if (rec[bestKey] == null || S.score > rec[bestKey]) { rec[bestKey] = S.score; isBest = true; }
     store.set('records', rec);
     store.del('run');
     S.isBest = isBest;
@@ -682,6 +664,7 @@
     const rec = store.get('records', { best: null, runs: 0, wins: 0, daily: {} });
     const parts = [];
     if (rec.best != null) parts.push(t('rec.best', { n: rec.best }));
+    if (rec.bestEasy != null) parts.push(t('rec.easy', { n: rec.bestEasy }));
     if (rec.runs) parts.push(t('rec.runs', { wins: rec.wins, runs: rec.runs }));
     const d = rec.daily[String(todayKey())];
     if (d != null) parts.push(t('rec.daily', { n: d }));
@@ -725,7 +708,7 @@
     ];
     $('#end-stats').innerHTML = rows.map(([k, v]) => `<div><dt>${t(k)}</dt><dd>${v}</dd></div>`).join('');
     $('#e-same').hidden = S.mode === 'daily';
-    $('#e-again').textContent = t(S.mode === 'daily' ? 'e.againDaily' : 'e.againFree');
+    $('#e-again').textContent = t({ daily: 'e.againDaily', easy: 'e.againEasy' }[S.mode] || 'e.againFree');
   }
 
   function showEnd() {
@@ -739,7 +722,7 @@
     newRun(mode, seed);
     shownHP = MAX_HP;
     busy = true;
-    log(mode === 'daily' ? 'log.startDaily' : 'log.start', { day: S.day });
+    log({ daily: 'log.startDaily', easy: 'log.startEasy' }[mode] || 'log.start', { day: S.day });
     render();
     await wait(150);
     await startRoom();
@@ -758,14 +741,34 @@
     if (S.over) showEnd();
   }
 
+  // Einfacher Dungeon: erst einen Seed suchen, dessen Dungeon der Löser mit Reserve gewinnt.
+  let building = false;
+  async function startEasy(btn) {
+    if (building) return;
+    building = true;
+    Sound.unlock();
+    const label = btn.textContent;
+    btn.disabled = true;
+    btn.textContent = t('building');
+    const found = await Rules.findEasySeed(randomSeed());
+    btn.disabled = false;
+    btn.textContent = label;
+    building = false;
+    begin('easy', found.seed);
+  }
+
   $('#t-new').addEventListener('click', () => begin('free', randomSeed()));
+  $('#t-easy').addEventListener('click', e => startEasy(e.currentTarget));
   $('#t-daily').addEventListener('click', () => begin('daily'));
   $('#t-continue').addEventListener('click', () => { Sound.unlock(); resume(store.get('run', null)); });
   $('#t-rules').addEventListener('click', () => openRules(OV.title));
   $('#p-rules').addEventListener('click', () => openRules(OV.pause));
   $('#p-restart').addEventListener('click', () => begin(S.mode, S.seed));
   $('#p-menu').addEventListener('click', () => { save(); showTitle(); });
-  $('#e-again').addEventListener('click', () => begin(S.mode, S.mode === 'daily' ? undefined : randomSeed()));
+  $('#e-again').addEventListener('click', e => {
+    if (S.mode === 'easy') startEasy(e.currentTarget);
+    else begin(S.mode, S.mode === 'daily' ? undefined : randomSeed());
+  });
   $('#e-same').addEventListener('click', () => begin(S.mode, S.seed));
   $('#e-menu').addEventListener('click', showTitle);
   $('#btn-help').addEventListener('click', () => { closeChoice(); openRules(null); });

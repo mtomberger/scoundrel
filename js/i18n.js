@@ -34,7 +34,10 @@ const I18N = (() => {
       tagline: 'Ein Dungeon aus 44 Spielkarten. Du hast 20 Leben.',
       't.continue': 'Weiterspielen',
       't.new': 'Neues Spiel',
+      't.easy': 'Einfacher Dungeon',
+      't.easyHint': 'Gutmütig gemischt und garantiert schaffbar',
       't.daily': 'Tagesdungeon',
+      building: 'Dungeon wird gebaut …',
       't.rules': 'Spielregeln',
       credit: 'Nach dem Solitär-Kartenspiel <i>Scoundrel</i> von Zach Gage &amp; Kurt Bieg (2011).',
 
@@ -63,6 +66,10 @@ const I18N = (() => {
         <h3>Wertung</h3>
         <p><b>Durchgekommen:</b> Deine Punkte sind deine restlichen Leben. Hast du 20 Leben und war deine letzte Karte ein Heiltrank, zählt dessen Wert dazu (maximal 30).</p>
         <p><b>Gestorben:</b> Die Werte aller verbliebenen Monster (Dungeon und offene Raumkarten) werden abgezogen – das Ergebnis ist negativ.</p>
+        <h3>Spielmodi</h3>
+        <p><b>Neues Spiel:</b> zufällig gemischt. Nicht jeder dieser Dungeons ist zu gewinnen.</p>
+        <p><b>Einfacher Dungeon:</b> gutmütig gemischt – eine starke Waffe gleich im ersten Raum, die Monster grob von stark nach schwach. Bevor du ihn betrittst, rechnet ein Löser einen Weg zum Sieg mit mindestens 10 Leben Reserve durch. Er ist also sicher schaffbar.</p>
+        <p><b>Tagesdungeon:</b> zufällig gemischt, aber am selben Tag für alle gleich.</p>
         <h3>Steuerung</h3>
         <p>Karte anklicken oder antippen. Tastatur: <kbd>1</kbd>–<kbd>4</kbd> Karte wählen, <kbd>F</kbd> fliehen, im Kampf <kbd>W</kbd> Waffe oder <kbd>F</kbd> Faust, <kbd>M</kbd> Ton, <kbd>Esc</kbd> Menü.</p>`,
 
@@ -77,6 +84,7 @@ const I18N = (() => {
       'e.menu': 'Hauptmenü',
       'e.againDaily': 'Tagesdungeon nochmal',
       'e.againFree': 'Neuer Dungeon',
+      'e.againEasy': 'Neuer einfacher Dungeon',
       'end.won': 'Dungeon bezwungen!',
       'end.lost': 'Du bist gefallen.',
       'calc.won': p => `${p.n} Leben übrig`,
@@ -94,7 +102,9 @@ const I18N = (() => {
 
       'mode.daily': p => `Tagesdungeon · ${dateDe(p.day)}`,
       'mode.free': p => `Freies Spiel · Seed ${p.seed}`,
+      'mode.easy': p => `Einfacher Dungeon · Seed ${p.seed}`,
       'rec.best': p => `Bestwert ${p.n}`,
+      'rec.easy': p => `Einfach ${p.n}`,
       'rec.runs': p => `${p.wins} von ${p.runs} Läufen überlebt`,
       'rec.daily': p => `Heute im Tagesdungeon: ${p.n}`,
       'rec.none': 'Noch kein Lauf gespielt.',
@@ -141,6 +151,7 @@ const I18N = (() => {
 
       'log.start': 'Du steigst hinab in den Dungeon. Viel Glück, Schurke.',
       'log.startDaily': p => `Tagesdungeon vom ${dateDe(p.day)}. Alle spielen heute dieselbe Kartenfolge.`,
+      'log.startEasy': 'Ein einfacher Dungeon: Er ist garantiert schaffbar. Viel Glück, Schurke.',
       'log.equip': p => `${p.w} angelegt – Stärke ${p.n}.`,
       'log.wasted': p => `${p.c} verfällt – nur ein Trank pro Raum.`,
       'log.heal': p => `${p.c} getrunken: +${p.n} Leben.`,
@@ -175,7 +186,10 @@ const I18N = (() => {
       tagline: 'A dungeon of 44 playing cards. You have 20 health.',
       't.continue': 'Continue',
       't.new': 'New game',
+      't.easy': 'Easy dungeon',
+      't.easyHint': 'Kindly shuffled and guaranteed to be beatable',
       't.daily': 'Daily dungeon',
+      building: 'Building dungeon …',
       't.rules': 'How to play',
       credit: 'Based on the solitaire card game <i>Scoundrel</i> by Zach Gage &amp; Kurt Bieg (2011).',
 
@@ -204,6 +218,10 @@ const I18N = (() => {
         <h3>Scoring</h3>
         <p><b>Survived:</b> your score is your remaining health. If you have 20 health and your last card was a potion, its value is added (30 at most).</p>
         <p><b>Died:</b> the values of all remaining monsters (dungeon and open room cards) are subtracted – the result is negative.</p>
+        <h3>Game modes</h3>
+        <p><b>New game:</b> shuffled at random. Not every one of these dungeons can be won.</p>
+        <p><b>Easy dungeon:</b> shuffled kindly – a strong weapon in the very first room and the monsters roughly from strong to weak. Before you enter, a solver works out a winning line with at least 10 health to spare, so it can definitely be beaten.</p>
+        <p><b>Daily dungeon:</b> shuffled at random, but the same for everyone on the same day.</p>
         <h3>Controls</h3>
         <p>Click or tap a card. Keyboard: <kbd>1</kbd>–<kbd>4</kbd> pick a card, <kbd>F</kbd> flee, in a fight <kbd>W</kbd> weapon or <kbd>F</kbd> fists, <kbd>M</kbd> sound, <kbd>Esc</kbd> menu.</p>`,
 
@@ -218,6 +236,7 @@ const I18N = (() => {
       'e.menu': 'Main menu',
       'e.againDaily': 'Replay daily dungeon',
       'e.againFree': 'New dungeon',
+      'e.againEasy': 'New easy dungeon',
       'end.won': 'Dungeon cleared!',
       'end.lost': 'You have fallen.',
       'calc.won': p => `${p.n} health left`,
@@ -235,7 +254,9 @@ const I18N = (() => {
 
       'mode.daily': p => `Daily dungeon · ${dateEn(p.day)}`,
       'mode.free': p => `Free play · seed ${p.seed}`,
+      'mode.easy': p => `Easy dungeon · seed ${p.seed}`,
       'rec.best': p => `Best score ${p.n}`,
+      'rec.easy': p => `Easy ${p.n}`,
       'rec.runs': p => `${p.wins} of ${p.runs} ${p.runs === 1 ? 'run' : 'runs'} survived`,
       'rec.daily': p => `Today's daily dungeon: ${p.n}`,
       'rec.none': 'No runs played yet.',
@@ -282,6 +303,7 @@ const I18N = (() => {
 
       'log.start': 'You descend into the dungeon. Good luck, scoundrel.',
       'log.startDaily': p => `Daily dungeon for ${dateEn(p.day)}. Everyone plays the same cards today.`,
+      'log.startEasy': 'An easy dungeon: it can definitely be beaten. Good luck, scoundrel.',
       'log.equip': p => `Equipped ${p.w} – strength ${p.n}.`,
       'log.wasted': p => `${p.c} wasted – only one potion per room.`,
       'log.heal': p => `Drank ${p.c}: +${p.n} health.`,

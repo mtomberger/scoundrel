@@ -14,11 +14,11 @@ This project was programmed entirely with [Claude Code](https://claude.com/claud
 
 | | |
 | --- | --- |
-| Prompts | 9 |
-| Tokens processed | about 33 million |
-| … of which output tokens | about 270,000 |
+| Prompts | 10 |
+| Tokens processed | about 47 million |
+| … of which output tokens | about 325,000 |
 
-The token figures were measured from the Claude Code session log when this README was written. Most of the processed tokens are cache reads: on every step the model re-reads the conversation so far, which is billed at a much lower rate than new input. The prompts cover the whole history of the repository, from the first game build through Git setup, GitHub Pages, the license and README, to the English translation.
+The token figures were measured from the Claude Code session log when this README was written. Most of the processed tokens are cache reads: on every step the model re-reads the conversation so far, which is billed at a much lower rate than new input. The prompts cover the whole history of the repository, from the first game build through Git setup, GitHub Pages, the license and README and the English translation, to the easy dungeon mode.
 
 ## Features
 
@@ -26,6 +26,7 @@ The token figures were measured from the Claude Code session log when this READM
 - **Original rules** (version 1.0 of August 15, 2011), including the weapon stacking rule and the official scoring.
 - **Crisp pixels on every screen:** the layout scales in whole-pixel steps, from phones up to 1920 × 1080.
 - **Animation and sound:** cards fly across the table and hits shake the screen. Sound effects and optional chiptune music are generated with WebAudio.
+- **Easy dungeon:** a kindly shuffled dungeon that is guaranteed to be beatable (see below).
 - **Daily dungeon:** everyone gets the same card order on the same day.
 - **Progress in the browser:** best scores, language choice and a running game are kept in the browser's `localStorage`.
 
@@ -49,6 +50,20 @@ Red face cards, red aces and jokers are removed.
 **Scoring:** if you survive, your remaining health is your score. With exactly 20 health, the value of a health potion is added if it was your last card. If you die, the sum of all remaining monsters is subtracted and your score is negative.
 
 The full rules with an example are in the game under **?**.
+
+## Game modes
+
+| Mode | Dungeon |
+| --- | --- |
+| New game | Shuffled at random. Not every one of these dungeons can be won. |
+| Easy dungeon | Shuffled kindly and checked by a solver: guaranteed to be beatable with health to spare. |
+| Daily dungeon | Shuffled at random, but the same for everyone on the same day. |
+
+**How the easy dungeon works.** Random Scoundrel dungeons are often brutal: the built-in solver finds a win for only about one in five of them. The easy dungeon is therefore built on purpose. A strong weapon (8–10) lies in the first room, the monsters come roughly from strong to weak so the weapon stays usable for a long time, further weapons only show up once the monsters are weaker than them, and the potions are spread across the dungeon. A bit of random noise keeps every dungeon different.
+
+Before the game starts, a solver in `js/rules.js` checks the dungeon. Room by room, it computes every possible play (fleeing, or every order of three cards with weapon or fists) and follows the most promising positions (a beam search). A dungeon is only used if the solver finds a win with **at least 10 health left**. The winning line it finds proves that the dungeon can be beaten. About every second candidate passes, so finding one usually takes a fraction of a second. During development, the solver's winning lines were replayed in the real game, and each one ended in exactly the predicted win.
+
+Easy dungeons have their own best score, so they don't inflate the normal one.
 
 ## Controls
 
@@ -87,6 +102,7 @@ With a free GitHub account, Pages only works for public repositories.
 index.html       Page skeleton and overlays; texts come from js/i18n.js
 css/style.css    Styling, pixel grid and narrow-screen layout
 js/i18n.js       English and German texts, language detection
+js/rules.js      Rules core without DOM: deck, easy-dungeon builder and solver
 js/sprites.js    Pixel art: sprites, card renderer, icons, card names
 js/audio.js      Sound effects and music with WebAudio
 js/game.js       Game logic, rendering, animation and input
